@@ -1,0 +1,20 @@
+.report-container {
+    padding: 20px;
+    background: #f9f9f9;
+  }
+  .summary {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .target-box {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  

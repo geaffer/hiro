@@ -1,0 +1,30 @@
+.weekly-container {
+    padding: 1.5rem;
+    max-width: 1000px;
+    margin: auto;
+  }
+  
+  .input-box {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .input-box input {
+    width: 100px;
+    padding: 0.5rem;
+  }
+  
+  .input-box button {
+    padding: 0.5rem 1rem;
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .summary-box p {
+    margin: 0.3rem 0;
+    font-weight: bold;
+  }
+  
