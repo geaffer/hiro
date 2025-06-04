@@ -56,18 +56,21 @@ const RevenueReportPage = () => {
           monthlyMap[r.month].push(r.revenue);
         });
 
-        const allMonths = Array.from({ length: 12 }, (_, i) => {
-          const month = (i + 1).toString().padStart(2, '0');
-          return `2025-${month}`;
-        });
+        const allMonths = Object.keys(monthlyMap).sort();
+        if (allMonths.length === 0) {
+          const now = new Date();
+          const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+          allMonths.push(ym);
+        }
 
         const costPromises = allMonths.map(async (month) => {
           const [y, m] = month.split('-');
           try {
-            const [labor, ingredient, fixed] = await Promise.all([
+            const [labor, ingredient, fixed, other] = await Promise.all([
               axios.get(`/api/labor-costs/month?year=${y}&month=${m}`),
               axios.get(`/api/ingredients/month?year=${y}&month=${m}`),
               axios.get(`/api/fixed-costs/month?year=${y}&month=${m}`),
+              axios.get(`/api/other-expenses/month?year=${y}&month=${m}`),
             ]);
 
             // ✅ 콘솔 디버깅 출력
@@ -90,10 +93,14 @@ const RevenueReportPage = () => {
               return sum + (Number(r.amount) || 0);
             }, 0);
 
-            return { month, laborCost, ingredientCost, fixedCost };
+            const otherCost = other.data.reduce((sum, r) => {
+              return sum + (Number(r.amount) || 0);
+            }, 0);
+
+            return { month, laborCost, ingredientCost, fixedCost, otherCost };
           } catch (error) {
             console.error(`❌ [${month}] 비용 API 로딩 실패`, error);
-            return { month, laborCost: 0, ingredientCost: 0, fixedCost: 0 };
+            return { month, laborCost: 0, ingredientCost: 0, fixedCost: 0, otherCost: 0 };
           }
         });
 
@@ -108,7 +115,8 @@ const RevenueReportPage = () => {
           const labor = cost.laborCost || 0;
           const ingredient = cost.ingredientCost || 0;
           const fixed = cost.fixedCost || 0;
-          const expense = labor + ingredient + fixed;
+          const other = cost.otherCost || 0;
+          const expense = labor + ingredient + fixed + other;
 
           return {
             month,
@@ -117,6 +125,7 @@ const RevenueReportPage = () => {
             labor,
             ingredient,
             fixed,
+            other,
             net: total - expense,
           };
         });
@@ -165,6 +174,7 @@ const RevenueReportPage = () => {
           <Line type="monotone" dataKey="labor" stroke="#f44336" name="인건비" />
           <Line type="monotone" dataKey="ingredient" stroke="#2196f3" name="식자재비" />
           <Line type="monotone" dataKey="fixed" stroke="#ff9800" name="고정비" />
+          <Line type="monotone" dataKey="other" stroke="#795548" name="기타비용" />
         </LineChart>
       </ResponsiveContainer>
 
