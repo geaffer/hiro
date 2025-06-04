@@ -17,3 +17,4 @@ Thumbs.db
 
 # 기타 로그
 *.log
+hs_err_pid*.log
